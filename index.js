@@ -1,15 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const PdfMake = require('pdfmake');
-const fonts = {
-  Roboto: {
-    normal: 'fonts/Roboto-Regular.ttf',
-    bold: 'fonts/Roboto-Medium.ttf',
-    italics: 'fonts/Roboto-Italic.ttf',
-    bolditalics: 'fonts/Roboto-MediumItalic.ttf',
-  },
-};
-const printer = new PdfMake(fonts);
+const factory = require('./pdfFactory');
 
 const args = process.argv.slice(2);
 const isCompressed = args.includes('--compress') || args.includes('-c');
@@ -56,37 +47,5 @@ const docDefinition = {
   content: [],
 };
 
-fs.exists(PATH, function(exists) {
-  if (!exists) {
-    console.log(PATH + ' is an invalid path');
-    return;
-  }
+factory.create(PATH, OUTPUT, docDefinition);
 
-  fs.readdir(PATH, function(err, filenames) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-
-    for (const filename of filenames) {
-      const fullPath = path.join(PATH, filename);
-      const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-      if (!allowedExtensions.exec(fullPath)) {
-        continue;
-      }
-      docDefinition.content.push({
-        width: 612.0,
-        height: 792.0,
-        image: fullPath,
-      });
-    }
-
-    console.log('>> ' + PATH + ' contains ' + docDefinition.content.length + ' images.');
-    console.log('>> Output location: ' + OUTPUT + '\n');
-    console.log('>> Configuration: ' + JSON.stringify(docDefinition, null, 2));
-
-    const pdfDoc = printer.createPdfKitDocument(docDefinition);
-    pdfDoc.pipe(fs.createWriteStream(OUTPUT));
-    pdfDoc.end();
-  });
-});
