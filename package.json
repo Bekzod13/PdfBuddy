@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pdfmake": "^0.1.38"
+    "pdfmake": "^0.1.39"
   },
   "devDependencies": {
-    "eslint": "^5.7.0",
+    "eslint": "^5.10.0",
     "eslint-config-google": "^0.11.0"
   }
 }
